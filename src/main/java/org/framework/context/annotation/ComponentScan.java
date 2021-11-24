@@ -1,4 +1,4 @@
-package org.framework.annotation;
+package org.framework.context.annotation;
 
 import java.lang.annotation.*;
 
