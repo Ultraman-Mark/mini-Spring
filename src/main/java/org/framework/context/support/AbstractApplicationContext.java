@@ -1,11 +1,13 @@
 package org.framework.context.support;
 
-import org.framework.beans.BeanWapper;
+import org.framework.annotation.*;
+import org.framework.beans.BeanWrapper;
 import org.framework.beans.factory.config.BeanDefinition;
 import org.framework.beans.factory.support.BeanDefinitionReader;
 import org.framework.beans.factory.support.DefaultListableBeanFactory;
 import org.framework.context.ApplicationContext;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +29,7 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
     /**
      * <p>保存包装对象</p>
      * */
-    private Map<String, BeanWapper> factoryBeanInstanceCache = new ConcurrentHashMap<>();
+    private Map<String, BeanWrapper> factoryBeanInstanceCache = new ConcurrentHashMap<>();
 
     @Override
     public void refresh() throws Exception {
@@ -65,6 +67,78 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
 
     @Override
     public Object getBean(String beanName){
+        BeanDefinition beanDefinition = super.beanDefinitionMap.get(beanName);
+        try {
+            // 通过bd实例化bean
+            Object instance = instantiateBean(beanDefinition);
+            if(instance==null){
+                return null;
+            }
+            //将实例化的bean使用bw包装
+            BeanWrapper beanWapper = new BeanWrapper(instance);
+
+            this.factoryBeanInstanceCache.put(beanDefinition.getBeanClassName(),beanWapper);
+
+            populateBean(instance);
+
+            return instance;
+
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
         return null;
+    }
+
+    /**
+     * <p>通过bd，实例化bean</p>
+     */
+    private Object instantiateBean(BeanDefinition beanDefinition){
+        Object instance = null;
+        String className = beanDefinition.getBeanClassName();
+        try {
+            if(this.factoryBeanObjectCache.containsKey(className)){
+                instance = this.factoryBeanObjectCache.get(className);
+            }
+            else {
+                Class<?> clazz = Class.forName(className);
+                instance = clazz.newInstance();
+
+                this.factoryBeanObjectCache.put(beanDefinition.getFactoryBeanName(),instance);
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return instance;
+    }
+
+    public void populateBean(Object instance){
+        Class clazz = instance.getClass();
+
+        if(!(clazz.isAnnotationPresent(Component.class)||
+                clazz.isAnnotationPresent(Controller.class)||
+                clazz.isAnnotationPresent(Service.class)||
+                clazz.isAnnotationPresent(Repository.class))){
+            return;
+        }
+
+        Field[] fields = clazz.getDeclaredFields();
+
+        for (Field field : fields){
+            if (!field.isAnnotationPresent(Autowired.class)){
+                continue;
+            }
+            String autowiredBeanName = field.getType().getName();
+
+            field.setAccessible(true);
+
+            try {
+                field.set(instance, this.factoryBeanInstanceCache.get(autowiredBeanName).getWrappedInstance());
+            }
+            catch (IllegalAccessException e){
+                e.printStackTrace();
+            }
+        }
     }
 }

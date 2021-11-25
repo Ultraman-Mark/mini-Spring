@@ -5,7 +5,7 @@ import java.lang.annotation.*;
 /**
  * Created by PYL
  */
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Component

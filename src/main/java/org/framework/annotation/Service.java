@@ -3,9 +3,11 @@ package org.framework.annotation;
 import java.lang.annotation.*;
 
 /**
- * Created by PYL
+ * <p>服务模式注解</p>
+ * @author Bosen
+ * @date 2021/9/10 14:18
  */
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Component

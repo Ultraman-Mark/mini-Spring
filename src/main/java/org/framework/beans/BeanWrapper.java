@@ -4,24 +4,28 @@ package org.framework.beans;
  * <p>bean的包装类</p>
  * Created by PYL
  */
-public class BeanWapper {
+public class BeanWrapper {
 
     /**
      * <p>返回由该类封装的bean实例</p>
      * */
-    private Object wrapperInstance;
+    private Object wrappedInstance;
+
+    public BeanWrapper(Object wrappedInstance){
+        this.wrappedInstance = wrappedInstance;
+    }
 
     /**
      *  <p>返回包装的bean类型</>
      * */
     private Class<?> wrappedClass;
 
-    public Object getWrapperInstance() {
-        return wrapperInstance;
+    public Object getWrappedInstance() {
+        return wrappedInstance;
     }
 
-    public void setWrapperInstance(Object wrapperInstance) {
-        this.wrapperInstance = wrapperInstance;
+    public void setWrappedInstance(Object wrappedInstance) {
+        this.wrappedInstance = wrappedInstance;
     }
 
     public Class<?> getWrappedClass() {
