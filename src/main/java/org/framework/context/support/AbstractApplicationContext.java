@@ -54,7 +54,7 @@ public abstract class AbstractApplicationContext extends DefaultListableBeanFact
     }
 
     /**
-     * <p>将beanDefinition放入IOC容器存储</p>
+     * <p>将非懒加载的类初始化</p>
      */
     private void doAutowired(){
         for (Map.Entry<String,BeanDefinition> beanDefinitionEntry : super.beanDefinitionMap.entrySet()){
