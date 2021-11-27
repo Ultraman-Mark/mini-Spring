@@ -2,6 +2,7 @@ package org.framework.test.service;
 
 import org.framework.annotation.Autowired;
 import org.framework.annotation.Service;
+import org.framework.test.controller.TestController;
 import org.framework.test.dao.TestDAO;
 
 /**
@@ -10,9 +11,9 @@ import org.framework.test.dao.TestDAO;
 @Service
 public class TestService {
     @Autowired
-    TestDAO testDAO;
+    TestController controller;
 
     public void echo(){
-         System.out.println(testDAO.echo());
+         System.out.println(controller);
     }
 }
